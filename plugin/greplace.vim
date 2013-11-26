@@ -257,16 +257,11 @@ function! s:gSearch(type, ...)
 
     if a:type == 'grep'
         if filenames == ''
-            let filenames = input('Search in files: ', '*', 'file')
+            let filenames = input('Search in files: ', '', 'file')
         endif
     elseif a:type == 'args'
         " Search in all the filenames in the argument list
         let arg_cnt = argc()
-
-        if arg_cnt == 0
-            call s:warn_msg('Error: Argument list is empty')
-            return
-        endif
 
         let filenames = ''
         for i in range(0, arg_cnt - 1)
@@ -284,17 +279,13 @@ function! s:gSearch(type, ...)
         endfor
     endif
 
-    if filenames == ''
-        call s:warn_msg('Error: No valid file names')
-        return
-    endif
-
     " Use ! after grep, so that Vim doesn't automatically jump to the
     " first match
-    let grep_cmd = 'grep! ' . grep_opt . ' ' . pattern . ' ' . filenames
+    let grep_cmd = 'silent Ag! ' . grep_opt . ' ' . pattern . ' ' . filenames
 
     " Run the grep and get the matches
     exe grep_cmd
+    exe 'ccl'
 
     call s:gReplace_show_matches()
 endfunction
